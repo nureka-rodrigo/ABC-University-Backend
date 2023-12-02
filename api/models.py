@@ -1,11 +1,24 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 # User modal
-class User(models.Model):
-    username = models.CharField(max_length=100)
+class User(AbstractUser):
+    username = models.CharField(max_length=100, primary_key=True)
     password = models.CharField(max_length=100)
     role = models.CharField(max_length=20)
+
+    last_login = None
+    is_superuser = None
+    is_staff = None
+    is_active = None
+    date_joined = None
+    email = None
+    first_name = None
+    last_name = None
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = [username, password, role]
 
     class Meta:
         verbose_name = "01. User"
@@ -75,6 +88,7 @@ class Faculty(models.Model):
 # Semester modal
 class Semester(models.Model):
     name = models.CharField(max_length=20)
+    status = models.CharField(max_length=20)
 
     class Meta:
         verbose_name = "08. Semester"
