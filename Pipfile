@@ -8,6 +8,7 @@ django = "*"
 python-dotenv = "*"
 pymysql = "*"
 djangorestframework = "*"
+django-rest-knox = "*"
 
 [dev-packages]
 

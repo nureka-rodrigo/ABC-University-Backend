@@ -1,4 +1,6 @@
-from rest_framework import serializers
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from rest_framework import serializers, validators
 
 from . import models
 
@@ -7,16 +9,31 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = ['username', 'password', 'role']
+
         extra_kwargs = {
             'password': {
                 'write_only': True
+            },
+            'username': {
+                'required': True,
+                'allow_blank': False,
+                'validators': [
+                    validators.UniqueValidator(
+                        get_user_model().objects.all(), 'Username already in use'
+                    )
+                ]
             }
         }
 
     def create(self, validated_data):
-        password = validated_data.pop('password', None)
-        instance = self.Meta.model(**validated_data)
-        if password is not None:
-            instance.set_password(password)
-        instance.save()
-        return instance
+        username = validated_data.get('username')
+        password = validated_data.get('password')
+        role = validated_data.get('role')
+
+        user = get_user_model().objects.create(
+            username=username,
+            password=make_password(password),
+            role=role,
+        )
+
+        return user
