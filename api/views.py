@@ -1,4 +1,7 @@
+from datetime import datetime, timedelta
+
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse
 from knox.auth import AuthToken
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -85,14 +88,16 @@ def login_user(request):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-def check_user(request):
-    user = get_user_model().objects.get(username='admin')
-    if user.is_active:
-        return Response({
-            "details": "Authenticated"
-        }, status=status.HTTP_200_OK)
+@api_view(['POST'])
+def set_cookie(request):
+    response = HttpResponse("Cookie created")
+    expiry = datetime.now() + timedelta(days=30)
+    response.set_cookie('token', request.data.get('token'), expires=expiry)
+    return response
 
-    return Response({
-        "details": "Not authenticated"
-    }, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def delete_cookie(request):
+    response = HttpResponse("Cookie deleted")
+    response.delete_cookie('token')
+    return response
