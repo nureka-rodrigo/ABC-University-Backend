@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 # User modal
@@ -11,7 +11,6 @@ class User(AbstractUser):
     last_login = None
     is_superuser = None
     is_staff = None
-    is_active = None
     date_joined = None
     email = None
     first_name = None
