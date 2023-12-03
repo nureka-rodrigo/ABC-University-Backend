@@ -9,6 +9,7 @@ python-dotenv = "*"
 pymysql = "*"
 djangorestframework = "*"
 django-rest-knox = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
