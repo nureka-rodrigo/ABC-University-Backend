@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from knox.auth import AuthToken
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from . import models
@@ -82,4 +83,17 @@ def login_user(request):
     except KeyError:
         return Response({
             "details": "error"
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def check_user(request):
+    try:
+        return Response({
+            "details": "Token is valid"
+        }, status=status.HTTP_200_OK)
+    except KeyError:
+        return Response({
+            "details": "Token is invalid"
         }, status=status.HTTP_400_BAD_REQUEST)

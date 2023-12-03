@@ -9,5 +9,5 @@ urlpatterns = [
     path('login/', views.login_user, name='login'),
     path('register/', views.create_user, name='register'),
     path('logout/', knox.views.LogoutView.as_view(), name='logout'),
-    path('logoutall/', knox.views.LogoutAllView.as_view(), name='logout all'),
+    path('check/', views.check_user, name='check token')
 ]
