@@ -1,13 +1,18 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers, validators
+
 from . import models
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['username', 'password', 'role']
+        fields = [
+            'username',
+            'password',
+            'role'
+        ]
 
         extra_kwargs = {
             'username': {
@@ -42,3 +47,31 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
+
+
+class DegreeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Degree
+        fields = '__all__'
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Department
+        fields = '__all__'
+
+
+class FacultySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Faculty
+        fields = '__all__'
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    degree = DegreeSerializer();
+    department = DepartmentSerializer()
+    faculty = FacultySerializer();
+
+    class Meta:
+        model = models.Student
+        fields = '__all__'

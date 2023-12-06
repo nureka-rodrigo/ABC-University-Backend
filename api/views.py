@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
-from knox.auth import AuthToken
+from knox.auth import AuthToken, TokenAuthentication
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
 from . import models
-from .serializers import UserSerializer
+from .serializers import UserSerializer, StudentSerializer
 
 
 @api_view(['GET'])
@@ -17,18 +18,6 @@ def get_routes(request):
             "api/user",
         }
         return Response(routes, status=status.HTTP_200_OK)
-    except KeyError:
-        return Response({
-            "details": "error"
-        }, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-def get_all_users(request):
-    try:
-        users = models.User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
     except KeyError:
         return Response({
             "details": "error"
@@ -96,3 +85,25 @@ def check_user(request):
         return Response({
             "details": "Token is invalid"
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_student(request):
+    try:
+        user = request.user
+        student = models.Student.objects.get(username=user.username)
+
+        if student is not None:
+            serializer = StudentSerializer(student)
+            return Response(serializer.data)
+
+    except KeyError:
+        return Response({
+            "details": "error"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    except models.Student.DoesNotExist:
+        return Response({
+            "details": "Student not found"
+        }, status=status.HTTP_404_NOT_FOUND)
