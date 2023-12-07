@@ -72,17 +72,3 @@ class Course(models.Model):
 class Semester(models.Model):
     name = models.CharField(max_length=20, null=False)
     status = models.CharField(max_length=20, null=True)
-
-
-# Result modal
-class Result(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    grade = models.CharField(max_length=10)
-
-
-# Feedback modal
-class Feedback(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    question = models.CharField(max_length=100)

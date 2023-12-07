@@ -68,9 +68,10 @@ class FacultySerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
-    degree = DegreeSerializer();
+    username = UserSerializer()
+    degree = DegreeSerializer()
     department = DepartmentSerializer()
-    faculty = FacultySerializer();
+    faculty = FacultySerializer()
 
     class Meta:
         model = models.Student
