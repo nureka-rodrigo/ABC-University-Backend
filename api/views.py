@@ -11,7 +11,7 @@ from .serializers import UserSerializer, StudentSerializer
 
 
 @api_view(['GET'])
-def get_routes(request):
+def list_routes(request):
     """
     Get a list of available API routes.
 
@@ -116,7 +116,7 @@ def login_user(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def check_user(request):
+def validate_token(request):
     """
     Check if the user is authenticated.
 
@@ -214,15 +214,6 @@ def update_password(request):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_profile_student(request):
-    """
-    Update the user's profile details.
-
-    Args:
-        request: The HTTP request object.
-
-    Returns:
-        Response: JSON response indicating the result of the profile update.
-    """
     try:
         # Get the user associated with the provided token
         user = request.user
@@ -230,55 +221,52 @@ def update_profile_student(request):
         # Retrieve the associated student based on the username
         student = models.Student.objects.get(username=user.username)
 
+        # Initialize a flag to check if any field is updated
+        fields_updated = False
+
         # Check for the presence of each field in the request data and update accordingly
         if 'fnameUpdate' in request.data:
             student.first_name = request.data.get('fnameUpdate')
-            student.save()
-            return Response({
-                'message': 'First name updated successfully.'
-            }, status=status.HTTP_200_OK)
+            fields_updated = True
 
         if 'lnameUpdate' in request.data:
             student.last_name = request.data.get('lnameUpdate')
-            student.save()
-            return Response({
-                'message': 'Last name updated successfully.'
-            }, status=status.HTTP_200_OK)
+            fields_updated = True
 
         if 'telUpdate' in request.data:
             student.tel = request.data.get('telUpdate')
-            student.save()
-            return Response({
-                'message': 'Mobile number updated successfully.'
-            }, status=status.HTTP_200_OK)
+            fields_updated = True
 
         if 'dobUpdate' in request.data:
             student.dob = request.data.get('dobUpdate')
-            student.save()
-            return Response({
-                'message': 'DOB updated successfully.'
-            }, status=status.HTTP_200_OK)
+            fields_updated = True
 
         if 'descriptionUpdate' in request.data:
             student.description = request.data.get('descriptionUpdate')
-            student.save()
-            return Response({
-                'message': 'Description updated successfully.'
-            }, status=status.HTTP_200_OK)
+            fields_updated = True
 
         # If none of the expected fields are present in the request data
-        return Response({
-            'error': 'Missing or invalid data for profile update'}
-            , status=status.HTTP_400_BAD_REQUEST)
+        if not fields_updated:
+            return Response({
+                'error': 'Missing or invalid data for profile update'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Handle the case where the associated student is not found
+        # Save the student instance only if any field is updated
+        student.save()
+
+        # Return success message
+        return Response({
+            'message': 'User profile updated successfully'
+        }, status=status.HTTP_200_OK)
+
+    # Handle the case where the associated student is not found
     except models.Student.DoesNotExist:
         return Response({
             'error': 'User not found'
-        }, status=status.HTTP_400_BAD_REQUEST)
+        }, status=status.HTTP_404_NOT_FOUND)
 
-        # Handle unexpected exceptions and provide a generic error message
+    # Handle unexpected exceptions and provide a generic error message
     except Exception as e:
         return Response({
-            "error": f"An error occurred: {str(e)}"
+            'error': f'An error occurred: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
