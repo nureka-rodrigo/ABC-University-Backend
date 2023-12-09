@@ -10,6 +10,6 @@ urlpatterns = [
     path('logout/', knox.views.LogoutView.as_view(), name='logout'),
     path('check/', views.check_user, name='check token'),
     path('user/update_password/', views.update_password, name='change user password'),
-    # path('user/update_profile/', views.update_profile, name='change user profile'),
+    path('user/update_profile/', views.update_profile_student, name='change user profile'),
     path('user/student/', views.get_student, name='get student details'),
 ]

@@ -204,3 +204,51 @@ def update_password(request):
     AuthToken.objects.create(user)
 
     return Response({'message': 'Password updated successfully.'}, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_profile_student(request):
+    """
+    Update the user's profile details.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        Response: JSON response indicating the result of the profile update.
+    """
+    try:
+        # Get the user associated with the provided token
+        user = request.user
+
+        # Retrieve the associated student based on the username
+        student = models.Student.objects.get(username=user.username)
+
+        if 'fnameUpdate' in request.data:
+            student.first_name = request.data.get('fnameUpdate')
+            student.save()
+            return Response({'message': 'First name updated successfully.'}, status=status.HTTP_200_OK)
+        if 'lnameUpdate' in request.data:
+            student.last_name = request.data.get('lnameUpdate')
+            student.save()
+            return Response({'message': 'Last name updated successfully.'}, status=status.HTTP_200_OK)
+        if 'telUpdate' in request.data:
+            student.tel = request.data.get('telUpdate')
+            student.save()
+            return Response({'message': 'Mobile number updated successfully.'}, status=status.HTTP_200_OK)
+        if 'dobUpdate' in request.data:
+            student.dob = request.data.get('dobUpdate')
+            student.save()
+            return Response({'message': 'DOB updated successfully.'}, status=status.HTTP_200_OK)
+        if 'descriptionUpdate' in request.data:
+            student.description = request.data.get('descriptionUpdate')
+            student.save()
+            return Response({'message': 'Description updated successfully.'}, status=status.HTTP_200_OK)
+
+        return Response({'error': 'Missing or invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+
+    except models.Student.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if 'fname' is in the request data
