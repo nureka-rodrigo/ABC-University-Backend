@@ -268,7 +268,7 @@ def update_profile_student(request):
 
         # If none of the expected fields are present in the request data
         return Response({
-            'error': 'Missing or invalid data'}
+            'error': 'Missing or invalid data for profile update'}
             , status=status.HTTP_400_BAD_REQUEST)
 
         # Handle the case where the associated student is not found
