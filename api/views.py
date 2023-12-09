@@ -186,12 +186,15 @@ def update_password(request):
 
     # Check if the current password matches the one in the database
     if not user.check_password(current_password):
-        return Response({'error': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            'error': 'Current password is incorrect.'
+        }, status=status.HTTP_400_BAD_REQUEST)
 
     # Check if the new password and confirm password match
     if new_password != confirm_password:
-        return Response({'error': 'New password and confirm password do not match.'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            'error': 'New password and confirm password do not match.'
+        }, status=status.HTTP_400_BAD_REQUEST)
 
     # Update the user's password
     user.set_password(new_password)
@@ -203,7 +206,9 @@ def update_password(request):
     # Generate a new token to invalidate the old ones
     AuthToken.objects.create(user)
 
-    return Response({'message': 'Password updated successfully.'}, status=status.HTTP_200_OK)
+    return Response({
+        'message': 'Password updated successfully.'
+    }, status=status.HTTP_200_OK)
 
 
 @api_view(['PUT'])
@@ -225,30 +230,55 @@ def update_profile_student(request):
         # Retrieve the associated student based on the username
         student = models.Student.objects.get(username=user.username)
 
+        # Check for the presence of each field in the request data and update accordingly
         if 'fnameUpdate' in request.data:
             student.first_name = request.data.get('fnameUpdate')
             student.save()
-            return Response({'message': 'First name updated successfully.'}, status=status.HTTP_200_OK)
+            return Response({
+                'message': 'First name updated successfully.'
+            }, status=status.HTTP_200_OK)
+
         if 'lnameUpdate' in request.data:
             student.last_name = request.data.get('lnameUpdate')
             student.save()
-            return Response({'message': 'Last name updated successfully.'}, status=status.HTTP_200_OK)
+            return Response({
+                'message': 'Last name updated successfully.'
+            }, status=status.HTTP_200_OK)
+
         if 'telUpdate' in request.data:
             student.tel = request.data.get('telUpdate')
             student.save()
-            return Response({'message': 'Mobile number updated successfully.'}, status=status.HTTP_200_OK)
+            return Response({
+                'message': 'Mobile number updated successfully.'
+            }, status=status.HTTP_200_OK)
+
         if 'dobUpdate' in request.data:
             student.dob = request.data.get('dobUpdate')
             student.save()
-            return Response({'message': 'DOB updated successfully.'}, status=status.HTTP_200_OK)
+            return Response({
+                'message': 'DOB updated successfully.'
+            }, status=status.HTTP_200_OK)
+
         if 'descriptionUpdate' in request.data:
             student.description = request.data.get('descriptionUpdate')
             student.save()
-            return Response({'message': 'Description updated successfully.'}, status=status.HTTP_200_OK)
+            return Response({
+                'message': 'Description updated successfully.'
+            }, status=status.HTTP_200_OK)
 
-        return Response({'error': 'Missing or invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+        # If none of the expected fields are present in the request data
+        return Response({
+            'error': 'Missing or invalid data'}
+            , status=status.HTTP_400_BAD_REQUEST)
 
+        # Handle the case where the associated student is not found
     except models.Student.DoesNotExist:
-        return Response({'error': 'User not found'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            'error': 'User not found'
+        }, status=status.HTTP_400_BAD_REQUEST)
 
-    # Check if 'fname' is in the request data
+        # Handle unexpected exceptions and provide a generic error message
+    except Exception as e:
+        return Response({
+            "error": f"An error occurred: {str(e)}"
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
