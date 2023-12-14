@@ -1,4 +1,7 @@
+import os
+
 from django.contrib.auth import get_user_model, update_session_auth_hash
+from django.core.files.base import ContentFile
 from knox.auth import AuthToken, TokenAuthentication
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -96,7 +99,6 @@ def login_user(request):
 
         # Set user as active (if needed)
         if not user.is_active:
-            user.is_active = True
             user.save()
 
         # Return a JSON response with user information and the generated token
@@ -134,6 +136,9 @@ def validate_token(request):
 def get_student(request):
     """
     Retrieve information about the authenticated student.
+
+    Args:
+        request: The HTTP request object.
 
     Returns:
         Response: JSON response containing student details.
@@ -243,6 +248,19 @@ def update_profile_student(request):
 
         if 'descriptionUpdate' in request.data:
             student.description = request.data.get('descriptionUpdate')
+            fields_updated = True
+
+        if 'file-upload' in request.data:
+            uploaded_file = request.FILES['file-upload']
+
+            # Extract the file extension from the original filename
+            _, file_extension = os.path.splitext(uploaded_file.name)
+
+            # Generate a new filename using username
+            new_filename = f"{user.username}{file_extension}"
+
+            # Set the new filename for the student's image
+            student.image.save(new_filename, ContentFile(uploaded_file.read()))
             fields_updated = True
 
         # If none of the expected fields are present in the request data
