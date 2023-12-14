@@ -2,6 +2,10 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+def upload_to(instance, filename):
+    return 'users/{filename}'.format(filename=filename)
+
+
 # User modal
 class User(AbstractUser):
     username = models.CharField(max_length=100, primary_key=True)
@@ -42,7 +46,7 @@ class Lecturer(models.Model):
     last_name = models.CharField(max_length=100, null=True)
     email = models.CharField(max_length=100, null=True)
     tel = models.CharField(max_length=20, null=True)
-    image = models.CharField(max_length=100, null=True)
+    image = models.ImageField("Image", upload_to=upload_to, null=True)
 
 
 # Student modal
@@ -57,7 +61,7 @@ class Student(models.Model):
     tel = models.CharField(max_length=20, null=True)
     dob = models.DateField(null=True)
     description = models.TextField(null=True)
-    image = models.CharField(max_length=100, null=True)
+    image = models.ImageField("Image", upload_to=upload_to, null=True)
 
 
 # Course modal
