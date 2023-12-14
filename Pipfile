@@ -10,6 +10,7 @@ pymysql = "*"
 djangorestframework = "*"
 django-rest-knox = "*"
 django-cors-headers = "*"
+pillow = "*"
 
 [dev-packages]
 
