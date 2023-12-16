@@ -11,6 +11,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=100, primary_key=True)
     password = models.CharField(max_length=100)
     role = models.CharField(max_length=20)
+    image = models.ImageField("Image", upload_to=upload_to, null=True)
 
     last_login = None
     is_superuser = None

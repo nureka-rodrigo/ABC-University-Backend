@@ -1,3 +1,4 @@
+import base64
 import os
 
 from django.contrib.auth import get_user_model, update_session_auth_hash
@@ -152,9 +153,19 @@ def get_student(request):
 
         # Check if the student exists
         if student:
-            # Serialize the student data and return a JSON response
+            # Read and base64 encode the image data
+            if student.image:
+                with open(student.image.path, 'rb') as image_file:
+                    encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+            else:
+                encoded_image = None
+
+            # Serialize the student data and include the image in the response
             serializer = StudentSerializer(student)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            response_data = serializer.data
+            response_data['image'] = encoded_image
+
+            return Response(response_data, status=status.HTTP_200_OK)
 
     # Handle the case when the student is not found
     except models.Student.DoesNotExist:
