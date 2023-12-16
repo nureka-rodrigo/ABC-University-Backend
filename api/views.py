@@ -230,6 +230,14 @@ def update_password(request):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_profile_student(request):
+    """
+        Update the student's profile.
+
+        Args:
+            request: The HTTP request object.
+
+        Returns:
+    """
     try:
         # Get the user associated with the provided token
         user = request.user
