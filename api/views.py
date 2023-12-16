@@ -261,7 +261,7 @@ def update_profile_student(request):
             student.description = request.data.get('descriptionUpdate')
             fields_updated = True
 
-        if 'file-upload' in request.data:
+        if 'file-upload' in request.FILES:
             uploaded_file = request.FILES['file-upload']
 
             # Extract the file extension from the original filename
