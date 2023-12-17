@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from . import models
-from .serializers import UserSerializer, StudentSerializer
+from .serializers import UserSerializer, StudentSerializer, ResultSerializer
 
 
 @api_view(['GET'])
@@ -306,4 +306,49 @@ def update_profile_student(request):
     except Exception as e:
         return Response({
             'error': f'An error occurred: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_result(request):
+    """
+    Retrieve information about the authenticated student.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        Response: JSON response containing student results.
+    """
+    try:
+        # Get the authenticated user
+        user = request.user
+
+        # Retrieve the associated student based on the username
+        student = models.Student.objects.get(username=user.username)
+
+        # Retrieve the semester from the request
+        semester = request.data['semester']
+
+        # Check if the student exists
+        if student:
+            results = models.Result.objects.filter(student=student, semester=semester)
+
+            # Serialize the results using nested serialization
+            serializer = ResultSerializer(results, many=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # Handle the case when the student is not found
+    except models.Student.DoesNotExist:
+        return Response({
+            "error": "Student not found"
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    # Handle unexpected exceptions and provide a generic error message
+    except Exception as e:
+        return Response({
+            "error": f"An error occurred: {str(e)}"
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

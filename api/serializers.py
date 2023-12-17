@@ -95,7 +95,6 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class ResultSerializer(serializers.ModelSerializer):
-    student = StudentSerializer()
     course = CourseSerializer()
     semester = SemesterSerializer()
 
