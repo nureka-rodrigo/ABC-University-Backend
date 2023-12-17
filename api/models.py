@@ -62,7 +62,7 @@ class Student(models.Model):
     tel = models.CharField(max_length=20, null=True)
     dob = models.DateField(null=True)
     description = models.TextField(null=True)
-    image = models.ImageField("Image", upload_to=upload_to, null=True)
+    image = models.ImageField("Image", upload_to=upload_to, default='anonymous/anonymous.jpg')
 
 
 # Course modal
