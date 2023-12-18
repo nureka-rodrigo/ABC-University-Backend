@@ -45,6 +45,12 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+class SemesterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Semester
+        fields = '__all__'
+
+
 class DegreeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Degree
@@ -60,18 +66,6 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class FacultySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Faculty
-        fields = '__all__'
-
-
-class CourseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Course
-        fields = '__all__'
-
-
-class SemesterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Semester
         fields = '__all__'
 
 
@@ -91,6 +85,15 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Student
+        fields = '__all__'
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    lecturer = LecturerSerializer()
+    semester = SemesterSerializer()
+
+    class Meta:
+        model = models.Course
         fields = '__all__'
 
 

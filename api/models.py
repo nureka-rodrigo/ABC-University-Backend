@@ -11,7 +11,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=100, primary_key=True)
     password = models.CharField(max_length=100)
     role = models.CharField(max_length=20)
-    image = models.ImageField("Image", upload_to=upload_to, null=True)
+    image = models.ImageField("Image", upload_to=upload_to, default='anonymous/anonymous.jpg')
 
     last_login = None
     is_superuser = None
@@ -23,6 +23,12 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = [username, password, role]
+
+
+# Semester modal
+class Semester(models.Model):
+    name = models.CharField(max_length=20, null=False)
+    status = models.CharField(max_length=20, null=True)
 
 
 # Degree modal
@@ -43,11 +49,10 @@ class Faculty(models.Model):
 # Lecturer modal
 class Lecturer(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100, null=True)
-    last_name = models.CharField(max_length=100, null=True)
+    name = models.CharField(max_length=100, null=True)
     email = models.CharField(max_length=100, null=True)
     tel = models.CharField(max_length=20, null=True)
-    image = models.ImageField("Image", upload_to=upload_to, null=True)
+    image = models.ImageField("Image", upload_to=upload_to, default='anonymous/anonymous.jpg')
 
 
 # Student modal
@@ -71,12 +76,8 @@ class Course(models.Model):
     title = models.CharField(max_length=100, null=False)
     credits = models.CharField(max_length=10, null=False)
     type = models.CharField(max_length=10, null=False)
-
-
-# Semester modal
-class Semester(models.Model):
-    name = models.CharField(max_length=20, null=False)
-    status = models.CharField(max_length=20, null=True)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
+    lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE)
 
 
 class Result(models.Model):

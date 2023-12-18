@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from . import models
-from .serializers import UserSerializer, StudentSerializer, ResultSerializer
+from .serializers import UserSerializer, StudentSerializer, ResultSerializer, CourseSerializer
 
 
 @api_view(['GET'])
@@ -309,10 +309,43 @@ def update_profile_student(request):
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@api_view(['GET'])
+def get_courses_next_sem(request):
+    """
+    Retrieve information about the authenticated student.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        Response: JSON response containing course details.
+    """
+    try:
+        # Retrieve the active semester
+        active_semester = models.Semester.objects.get(status="1")
+
+        # Set next semester
+        next_semester = int(active_semester.name) + 1
+
+        # Retrieve courses of the active semester
+        courses = models.Course.objects.filter(semester__name=next_semester)
+
+        # Serialize the results using nested serialization
+        serializer = CourseSerializer(courses, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # Handle unexpected exceptions and provide a generic error message
+    except Exception as e:
+        return Response({
+            "error": f"An error occurred: {str(e)}"
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def get_result(request):
+def get_results(request):
     """
     Retrieve information about the authenticated student.
 
@@ -334,6 +367,7 @@ def get_result(request):
 
         # Check if the student exists
         if student:
+            # Retrieve results of the student
             results = models.Result.objects.filter(student=student, semester=semester)
 
             # Serialize the results using nested serialization
@@ -346,6 +380,39 @@ def get_result(request):
         return Response({
             "error": "Student not found"
         }, status=status.HTTP_404_NOT_FOUND)
+
+    # Handle unexpected exceptions and provide a generic error message
+    except Exception as e:
+        return Response({
+            "error": f"An error occurred: {str(e)}"
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def get_courses_prev_sem(request):
+    """
+    Retrieve information about the authenticated student.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        Response: JSON response containing course details.
+    """
+    try:
+        # Retrieve the active semester
+        active_semester = models.Semester.objects.get(status="1")
+
+        # Set previous semester
+        prev_semester = int(active_semester.name) - 1
+
+        # Retrieve courses of the active semester
+        courses = models.Course.objects.filter(semester__name=prev_semester)
+
+        # Serialize the results using nested serialization
+        serializer = CourseSerializer(courses, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     # Handle unexpected exceptions and provide a generic error message
     except Exception as e:
