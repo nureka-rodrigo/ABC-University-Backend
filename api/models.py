@@ -84,4 +84,14 @@ class Result(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
-    grade = models.CharField(max_length=20, null=False)
+    grade = models.CharField(max_length=20, default="-")
+
+
+class Feedback(models.Model):
+    course = models.ForeignKey(Result, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    Course_Content = models.CharField(max_length=100, null=False)
+    Instructor_Effectiveness = models.CharField(max_length=100, null=False)
+    Clarity_of_Explanations = models.CharField(max_length=100, null=False)
+    Usefulness_of_Assignments = models.CharField(max_length=100, null=False)
+    Overall_Satisfaction = models.CharField(max_length=100, null=False)

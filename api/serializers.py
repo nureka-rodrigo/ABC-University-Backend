@@ -104,3 +104,9 @@ class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Result
         fields = '__all__'
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Feedback
+        fields = '__all__'

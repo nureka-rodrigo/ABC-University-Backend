@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from . import models
-from .serializers import UserSerializer, StudentSerializer, ResultSerializer, CourseSerializer
+from .serializers import UserSerializer, StudentSerializer, ResultSerializer, CourseSerializer, FeedbackSerializer
 
 
 @api_view(['GET'])
@@ -145,11 +145,8 @@ def get_student(request):
         Response: JSON response containing student details.
     """
     try:
-        # Get the authenticated user
-        user = request.user
-
-        # Retrieve the associated student based on the username
-        student = models.Student.objects.get(username=user.username)
+        # Get the student associated with the token
+        student = models.Student.objects.get(username=request.user)
 
         # Check if the student exists
         if student:
@@ -237,13 +234,11 @@ def update_profile_student(request):
             request: The HTTP request object.
 
         Returns:
+            Response: JSON response containing password update status.
     """
     try:
-        # Get the user associated with the provided token
-        user = request.user
-
-        # Retrieve the associated student based on the username
-        student = models.Student.objects.get(username=user.username)
+        # Get the student associated with the token
+        student = models.Student.objects.get(username=request.user)
 
         # Initialize a flag to check if any field is updated
         fields_updated = False
@@ -276,7 +271,7 @@ def update_profile_student(request):
             _, file_extension = os.path.splitext(uploaded_file.name)
 
             # Generate a new filename using username
-            new_filename = f"{user.username}{file_extension}"
+            new_filename = f"{student.username}{file_extension}"
 
             # Set the new filename for the student's image
             student.image.save(new_filename, ContentFile(uploaded_file.read()))
@@ -327,7 +322,7 @@ def get_courses_next_sem(request):
         # Set next semester
         next_semester = int(active_semester.name) + 1
 
-        # Retrieve courses of the active semester
+        # Retrieve courses of the next semester
         courses = models.Course.objects.filter(semester__name=next_semester)
 
         # Serialize the results using nested serialization
@@ -356,11 +351,8 @@ def get_results(request):
         Response: JSON response containing student results.
     """
     try:
-        # Get the authenticated user
-        user = request.user
-
-        # Retrieve the associated student based on the username
-        student = models.Student.objects.get(username=user.username)
+        # Get the student associated with the token
+        student = models.Student.objects.get(username=request.user)
 
         # Retrieve the semester from the request
         semester = request.data['semester']
@@ -406,13 +398,70 @@ def get_courses_prev_sem(request):
         # Set previous semester
         prev_semester = int(active_semester.name) - 1
 
-        # Retrieve courses of the active semester
-        courses = models.Course.objects.filter(semester__name=prev_semester)
+        # Retrieve courses of the previous semester
+        courses = models.Result.objects.filter(semester__name=prev_semester)
 
         # Serialize the results using nested serialization
-        serializer = CourseSerializer(courses, many=True)
+        serializer = ResultSerializer(courses, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # Handle unexpected exceptions and provide a generic error message
+    except Exception as e:
+        return Response({
+            "error": f"An error occurred: {str(e)}"
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def submit_feedback(request):
+    """
+    Submit course feedback.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        Response: JSON response containing submit feedback status.
+    """
+    try:
+        # Get the student associated with the token
+        student = models.Student.objects.get(username=request.user)
+
+        # Extract data from the request body
+        course = request.data.get('course')
+        feedback1 = request.data.get('feedback1')
+        feedback2 = request.data.get('feedback2')
+        feedback3 = request.data.get('feedback3')
+        feedback4 = request.data.get('feedback4')
+        feedback5 = request.data.get('feedback5')
+
+        # Get the Course instance based on the course code
+        course_instance = models.Course.objects.get(code=course)
+
+        # Create a dictionary to match with the model fields
+        feedback_data = {
+            'course': course_instance.pk,
+            'student': student.id,
+            'Course_Content': feedback1,
+            'Instructor_Effectiveness': feedback2,
+            'Clarity_of_Explanations': feedback3,
+            'Usefulness_of_Assignments': feedback4,
+            'Overall_Satisfaction': feedback5,
+        }
+
+        # Serialize the data
+        serializer = FeedbackSerializer(data=feedback_data)
+
+        # Validate and save the data
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'message': 'Feedback submitted successfully'
+            }, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Handle unexpected exceptions and provide a generic error message
     except Exception as e:
