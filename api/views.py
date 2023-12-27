@@ -438,7 +438,7 @@ def submit_feedback(request):
         feedback5 = request.data.get('feedback5')
 
         # Get the Course instance based on the course code
-        course_instance = models.Course.objects.get(code=course)
+        course_instance = models.Result.objects.get(course__code=course)
 
         # Create a dictionary to match with the model fields
         feedback_data = {
