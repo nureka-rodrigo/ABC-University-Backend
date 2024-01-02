@@ -340,6 +340,61 @@ def get_courses_next_sem(request):
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
+def register_sem(request):
+    """
+    Retrieve information about the authenticated student.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        Response: JSON response containing semester registration status.
+    """
+    try:
+        # Assuming the checkedCheckboxes array is sent in the request data
+        checked_courses = request.data.get('checkedCourses', [])
+
+        # Get the student associated with the token
+        student = models.Student.objects.get(username=request.user)
+
+        # Retrieve the active semester
+        active_semester = models.Semester.objects.get(status="1")
+
+        # Set next semester
+        next_semester = models.Semester.objects.get(name=int(active_semester.name) + 1)
+
+        # Update the Result model for each checked course
+        for course_code in checked_courses:
+            course = models.Course.objects.get(code=course_code)
+
+            # Check if the result already exists, if not, create a new one
+            _, created = models.Result.objects.get_or_create(
+                student=student,
+                course=course,
+                semester=next_semester,
+                defaults={'grade': '-'}
+            )
+
+        return Response({
+            'message': 'Registered for semester successfully'
+        }, status=status.HTTP_200_OK)
+
+    # Handle the case when the student is not found
+    except models.Student.DoesNotExist:
+        return Response({
+            "error": "Student not found"
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    # Handle unexpected exceptions and provide a generic error message
+    except Exception as e:
+        return Response({
+            "error": f"An error occurred: {str(e)}"
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def get_results(request):
     """
     Retrieve information about the authenticated student.

@@ -15,6 +15,7 @@ urlpatterns = [
     path('user/student/', views.get_student, name='get_student_details'),
     path('get_courses_prev_sem/', views.get_courses_prev_sem, name='get_course_details_of_previous_semester'),
     path('get_results/', views.get_results, name='get_result_details'),
+    path('register_sem/', views.register_sem, name='semester_registration'),
     path('get_courses_next_sem/', views.get_courses_next_sem, name='get_course_details_of_next_semester'),
     path('submit_feedback/', views.submit_feedback, name='submit_feedback'),
 ]
