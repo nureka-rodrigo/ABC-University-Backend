@@ -1,1 +1,1 @@
-web: gunicorn abc-university-backend.wsgi
+web: gunicorn abc_university_backend.wsgi:application
