@@ -28,7 +28,7 @@ def list_routes(request):
             "api/login",
             "api/user",
         ]
-        # Return the list of routes as a JSON response with a 200 status code
+        # Return the list of routes as a JSON response with a 200-status code
         return Response(routes, status=status.HTTP_200_OK)
 
     # Handle unexpected exceptions and provide a generic error message
@@ -286,7 +286,7 @@ def update_profile_student(request):
         # Save the student instance only if any field is updated
         student.save()
 
-        # Return success message
+        # Return a success message
         return Response({
             'message': 'User profile updated successfully'
         }, status=status.HTTP_200_OK)
