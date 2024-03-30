@@ -3,6 +3,7 @@
 This project is a web application built using Django.
 It's a student management system that allows students to view their profile,
 update their profile and password, register for courses, and provide feedback.
+
 This project is the backend part of the ABC University Student Management System.
 The frontend part of the project is
 available [here](https://github.com/nureka-rodrigo/abc-university-frontend).
