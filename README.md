@@ -1,4 +1,4 @@
-# abc-university-frontend
+# abc-university-backend
 
 This project is a web application built using Django.
 It's a student management system that allows students to view their profile,
