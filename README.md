@@ -1,4 +1,4 @@
-# abc-university-backend
+# ABC-University-Backend
 
 This project is a web application built using Django.
 It's a student management system that allows students to view their profile,
@@ -32,8 +32,8 @@ you'll need to have [Python](https://www.python.org/),
 [pip](https://pip.pypa.io/en/stable/) and [pipenv](https://pipenv.pypa.io/en/latest/) installed.
 Follow these steps:
 
-1. Clone the repository: `git clone https://github.com/nureka-rodrigo/abc-university-backend.git`
-2. Navigate into the project directory: `cd abc-university-backend`
+1. Clone the repository: `git clone https://github.com/nureka-rodrigo/ABC-University-Backend.git`
+2. Navigate into the project directory: `cd ABC-University-Backend`
 3. Install the dependencies: `pipenv install`
 4. Activate the pipenv shell: `pipenv shell`
 5. Start the application: `python manage.py runserver`
