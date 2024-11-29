@@ -47,4 +47,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 ## License
 
 This project is licensed under the terms of
-the [MIT license](https://github.com/nureka-rodrigo/abc-university-backend/blob/main/LICENSE).
+the [MIT license](https://github.com/nureka-rodrigo/ABC-University-Backend/blob/main/LICENSE).
